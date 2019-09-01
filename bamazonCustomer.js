@@ -20,7 +20,7 @@ connection.connect(function (err) {
     start();
 });
 
-// function which prompts the user for what action they should take
+// function which  displaya all of the items available for sale. Include the ids, names, and prices of products for sale.
 function start() {
     connection.query('SELECT item_id, product_name, price FROM products', function (err, res) {
         if (err) throw err;
@@ -40,9 +40,14 @@ function start() {
             )
         };
         console.log(table.toString());
+        firstPrompt();
     })
 };
 
+var firstPrompt = function(){
+    inquirer
+        .prompt
+}
 
 
     //    * The first should ask them the ID of the product they would like to buy.
