@@ -5,13 +5,13 @@ var Table = require('cli-table');
 var connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
-
     user: 'root',
-
     password: 'Steven89',
     database: 'bamazon'
 });
 
+
+var productPurchased = [];
 
 // connect to the mysql server and sql database
 connection.connect(function (err) {
@@ -24,29 +24,77 @@ connection.connect(function (err) {
 function start() {
     connection.query('SELECT item_id, product_name, price FROM products', function (err, res) {
         if (err) throw err;
-
+        // generate horizontal table with cli-table
         var table = new Table({
-            head: ['Item #', 'Product name', 'Price'],
-            style: {
-                head: ['blue'],
-                compact: false,
-                colAligns: ['center'],
-            }
-        }); 
+                head: ['Item #', 'Product name', 'Price'],
+                style: {
+                    head: ['blue'],
+                    compact: false,
+                    colAligns: ['center'],
+                }
+            }); 
             console.log("Welcome to Bamazon! Have a browse of what's in stock:"); console.log('----------------------------------------------------------------------------------------------------');
             for (var i = 0; i < res.length; i++) {
+            // push data to table
             table
                 .push([res[i].item_id, res[i].product_name, res[i].price]
             )
         };
         console.log(table.toString());
-        firstPrompt();
+        purchase();
     })
 };
 
-var firstPrompt = function(){
+function purchase = (){
     inquirer
-        .prompt
+        .prompt([
+        {
+            type: 'input',
+            name: 'id'
+            message: "What is the ID of the product you would like to buy?",
+            validate: function(value) {
+                if (isNaN (value) === false) {
+                    return true;
+                }
+                return false;
+            }
+        },
+
+        {
+            type: 'input',
+            name: 'order_qty'
+            message: "How many units of the product would you like?",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
+            }
+        }
+    ])
+        .then(function(answer) {
+            var item = answer.id;
+            var order_qty = parseInt(answer.order_qty);
+            var totalCost = parseFloat(((res[item].price)*order_qty);
+
+            connection.query('SELECT * FROM products WHERE ?', { item_id: id },
+                function(err, res) {
+                    if (err) throw err;
+                    console.log("Please enter a valid Item #");
+                    start();
+                    } if(res[0].stock_quantity < order_qty) {
+                        console.log("Unfortunately we are out of stock of that item!"")
+                        start();
+
+                    }
+
+                    }
+            }
+        }
+
+
+
+            )
 }
 
 

@@ -25,4 +25,16 @@ VALUES ('Yoga Mat','Fitness',89.95,15),
     ('Plush Knitted Throw','Homewares',87.50,2),
     ('Set of 3 Scented Candles','Homewares',14.96,5),
     ('Wayfarer Sunglasses','Accessories',105.60,8);
--- 4. Populate this database with around 10 different products. (i.e. Insert "mock" data rows into this database and table).
+
+--      DESC            SQL             JS          var
+--     Item #           item_id         id          item
+--     Product name     product_name     prdct
+--     Department name  department_name  dept
+--     Price            price            prce          
+--     Stock quantity   stock_quantity  stock_qty
+
+--     Units            order_quantity       order_qty
+--     Units            order_id      order_id
+
+
+

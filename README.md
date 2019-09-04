@@ -13,6 +13,7 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
 * node.js
 * mysql - npm
 * Inquirer - npm
+* cli table - npm https://www.npmjs.com/package/cli-table
 * MySQLWorkbench
 ---
 ## How it works
