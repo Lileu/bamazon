@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'Steven89',
+    password: 'root',
     database: 'bamazon'
 });
 
@@ -20,91 +20,105 @@ connection.connect(function (err) {
     start();
 });
 
-// function which  displaya all of the items available for sale. Include the ids, names, and prices of products for sale.
+// function which displays all of the items available for sale
 function start() {
     connection.query('SELECT item_id, product_name, price FROM products', function (err, res) {
         if (err) throw err;
         // generate horizontal table with cli-table
         var table = new Table({
-                head: ['Item #', 'Product name', 'Price'],
-                style: {
-                    head: ['blue'],
-                    compact: false,
-                    colAligns: ['center'],
-                }
-            }); 
-            console.log("Welcome to Bamazon! Have a browse of what's in stock:"); console.log('----------------------------------------------------------------------------------------------------');
-            for (var i = 0; i < res.length; i++) {
+            head: ['Item #', 'Product name', 'Price'],
+            style: {
+                head: ['blue'],
+                compact: false,
+                colAligns: ['center'],
+            }
+        });
+        console.log("Welcome to Bamazon! Have a browse of what's in stock...");
+        console.log('----------------------------------------------------------------------------------------------------');
+        for (var i = 0; i < res.length; i++) {
             // push data to table
             table
-                .push([res[i].item_id, res[i].product_name, res[i].price]
-            )
+                .push([res[i].item_id, res[i].product_name, res[i].price])
         };
         console.log(table.toString());
         purchase();
     })
 };
 
-function purchase = (){
-    inquirer
-        .prompt([
-        {
-            type: 'input',
-            name: 'id'
-            message: "What is the ID of the product you would like to buy?",
-            validate: function(value) {
-                if (isNaN (value) === false) {
-                    return true;
-                }
-                return false;
-            }
-        },
+function purchase() {
+    // reconnect to db
+    connection.query('SELECT * FROM products', function (err, res) {
 
-        {
-            type: 'input',
-            name: 'order_qty'
-            message: "How many units of the product would you like?",
-            validate: function(value) {
-                if (isNaN(value) === false) {
-                    return true;
-                }
-                return false;
-            }
-        }
-    ])
-        .then(function(answer) {
-            var item = answer.id;
-            var order_qty = parseInt(answer.order_qty);
-            var totalCost = parseFloat(((res[item].price)*order_qty);
-
-            connection.query('SELECT * FROM products WHERE ?', { item_id: id },
-                function(err, res) {
-                    if (err) throw err;
-                    console.log("Please enter a valid Item #");
-                    start();
-                    } if(res[0].stock_quantity < order_qty) {
-                        console.log("Unfortunately we are out of stock of that item!"")
-                        start();
-
+        inquirer.prompt([{
+                name: 'product',
+                type: 'rawlist',
+                message: "Which item would you like to buy?",
+                choices: function (value) {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].product_name);
                     }
-
+                    return choiceArray;
+                }
+            },
+            {
+                name: 'order_qty',
+                type: 'input',
+                message: "How many units of the product would you like?",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
                     }
+                    return false;
+                }
             }
-        }
+        ])
+        .then(function (answer) {
+            for (var i = 0; i < res.length; i++) {
+                // match the selected product to an item in the products table
+                if (res[i].product_name == answer.product) {
+                    // declare a varible for the order_item
+                    var order = res[i];
+                    //console.log(order);
+                }
+            }
+            var updatedStockQty = parseInt(order.stock_quantity) - parseInt(answer.order_qty);
 
+            if (order.stock_quantity < parseInt(answer.order_qty)) {
+                console.log("Sorry, we have insufficient stock. Please revise your order.");
+                console.log("");
+                purchase();
+            } else {
+                connection.query('UPDATE products SET ? WHERE ?', [{
+                    stock_quantity: updatedStockQty
+                }, {
+                    item_id: order.item_id
+                }], function (err, res) {
+                    console.log("Your order has been submitted successfully!");
+                    var totalCost = (parseInt(answer.order_qty) * order.price).toFixed(2);
+                    console.log("Your total purchase price is $" + totalCost);
+                    console.log("");
+                    continueShopping();
 
-
-            )
+                })
+            }
+        })
+    })
 }
 
+function continueShopping() {
+    inquirer.prompt({
+        name: 'continue',
+        type: 'list',
+        message: "Would you like to continue shopping?",
+        choices: ["Yes", "No"]
+    }).then(function (answer) {
+        if (answer.continue == "Yes") {
+            purchase();
+        } else {
+            console.log("Thank you for shopping with us! Your order will arrive in 3-5 days.")
+        }
+    }
+    )}
 
-    //    * The first should ask them the ID of the product they would like to buy.
-    //    * The second message should ask how many units of the product they would like to buy.
 
-    // 7. Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-
-    //    * If not, the app should log a phrase like `Insufficient quantity!`, and then prevent the order from going through.
-
-    // 8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
-    //    * This means updating the SQL database to reflect the remaining quantity.
-    //    * Once the update goes through, show the customer the total cost of their purchase.

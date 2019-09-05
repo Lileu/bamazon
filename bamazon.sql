@@ -26,15 +26,5 @@ VALUES ('Yoga Mat','Fitness',89.95,15),
     ('Set of 3 Scented Candles','Homewares',14.96,5),
     ('Wayfarer Sunglasses','Accessories',105.60,8);
 
---      DESC            SQL             JS          var
---     Item #           item_id         id          item
---     Product name     product_name     prdct
---     Department name  department_name  dept
---     Price            price            prce          
---     Stock quantity   stock_quantity  stock_qty
-
---     Units            order_quantity       order_qty
---     Units            order_id      order_id
-
 
 
