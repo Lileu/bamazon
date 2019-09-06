@@ -48,61 +48,62 @@ function start() {
 function purchase() {
     // reconnect to db
     connection.query('SELECT * FROM products', function (err, res) {
-
+        // use the inquirer module to collect inputs from the user
         inquirer.prompt([{
-                name: 'product',
-                type: 'rawlist',
-                message: "Which item would you like to buy?",
-                choices: function (value) {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].product_name);
+                    name: 'product',
+                    type: 'rawlist',
+                    message: "Which item would you like to buy?",
+                    choices: function (value) {
+                        var choiceArray = [];
+                        for (var i = 0; i < res.length; i++) {
+                            choiceArray.push(res[i].product_name);
+                        }
+                        return choiceArray;
                     }
-                    return choiceArray;
-                }
-            },
-            {
-                name: 'order_qty',
-                type: 'input',
-                message: "How many units of the product would you like?",
-                validate: function (value) {
-                    if (isNaN(value) === false) {
-                        return true;
+                },
+                {
+                    name: 'order_qty',
+                    type: 'input',
+                    message: "How many units of the product would you like?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
                 }
-            }
-        ])
-        .then(function (answer) {
-            for (var i = 0; i < res.length; i++) {
-                // match the selected product to an item in the products table
-                if (res[i].product_name == answer.product) {
-                    // declare a varible for the order_item
-                    var order = res[i];
-                    //console.log(order);
+            ])
+            // parse the inputs to retrieve the 
+            .then(function (answer) {
+                for (var i = 0; i < res.length; i++) {
+                    // match the selected product to an item in the products table
+                    if (res[i].product_name == answer.product) {
+                        // declare a variable for the order_item
+                        var order = res[i];
+                        //console.log(order);
+                    }
                 }
-            }
-            var updatedStockQty = parseInt(order.stock_quantity) - parseInt(answer.order_qty);
+                var updatedStockQty = parseInt(order.stock_quantity) - parseInt(answer.order_qty);
 
-            if (order.stock_quantity < parseInt(answer.order_qty)) {
-                console.log("Sorry, we have insufficient stock. Please revise your order.");
-                console.log("");
-                purchase();
-            } else {
-                connection.query('UPDATE products SET ? WHERE ?', [{
-                    stock_quantity: updatedStockQty
-                }, {
-                    item_id: order.item_id
-                }], function (err, res) {
-                    console.log("Your order has been submitted successfully!");
-                    var totalCost = (parseInt(answer.order_qty) * order.price).toFixed(2);
-                    console.log("Your total purchase price is $" + totalCost);
+                if (order.stock_quantity < parseInt(answer.order_qty)) {
+                    console.log("Sorry, we have insufficient stock. Please revise your ");
                     console.log("");
-                    continueShopping();
+                    purchase();
+                } else {
+                    connection.query('UPDATE products SET ? WHERE ?', [{
+                        stock_quantity: updatedStockQty
+                    }, {
+                        item_id: order.item_id
+                    }], function (err, res) {
+                        console.log("Your order has been submitted successfully!");
+                        var totalCost = (parseInt(answer.order_qty) * order.price).toFixed(2);
+                        console.log("Your total purchase price is $" + totalCost);
+                        console.log("");
+                        continueShopping();
 
-                })
-            }
-        })
+                    })
+                }
+            })
     })
 }
 
@@ -116,9 +117,8 @@ function continueShopping() {
         if (answer.continue == "Yes") {
             purchase();
         } else {
-            console.log("Thank you for shopping with us! Your order will arrive in 3-5 days.")
+            console.log("Thank you for shopping with us! Your order will arrive in 3-5 days.");
+            console.log('----------------------------------------------------------------------------------------------------');
         }
-    }
-    )}
-
-
+    })
+}
