@@ -16,17 +16,17 @@ var productPurchased = [];
 // connect to the mysql server and sql database
 connection.connect(function (err) {
     if (err) throw err;
-    // run the start function after the connection is made to prompt the user
+    // run the start function after the connection is made
     start();
 });
 
-// function which displays all of the items available for sale
+//  function to display all of the items available for sale
 function start() {
     connection.query('SELECT item_id, product_name, price FROM products', function (err, res) {
         if (err) throw err;
         // generate horizontal table with cli-table
         var table = new Table({
-            head: ['Item #', 'Product name', 'Price'],
+            head: ['Item number', 'Product name', 'Price'],
             style: {
                 head: ['blue'],
                 compact: false,
@@ -41,25 +41,25 @@ function start() {
                 .push([res[i].item_id, res[i].product_name, res[i].price])
         };
         console.log(table.toString());
-        purchase();
+        console.log('----------------------------------------------------------------------------------------------------');        purchase();
     })
 };
-
+// function to execute the purchase transaction
 function purchase() {
-    // reconnect to db
+    // connect to the database
     connection.query('SELECT * FROM products', function (err, res) {
         // use the inquirer module to collect inputs from the user
         inquirer.prompt([{
                     name: 'product',
-                    type: 'rawlist',
-                    message: "Which item would you like to buy?",
-                    choices: function (value) {
-                        var choiceArray = [];
-                        for (var i = 0; i < res.length; i++) {
-                            choiceArray.push(res[i].product_name);
+                    type: 'input',
+                    message: "What is the Item number for the product you would like to buy?",
+                    validate: function(value){
+                        if(isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0){
+                          return true;
+                        } else{
+                          return false;
                         }
-                        return choiceArray;
-                    }
+                      }
                 },
                 {
                     name: 'order_qty',
@@ -73,23 +73,23 @@ function purchase() {
                     }
                 }
             ])
-            // parse the inputs to retrieve the 
+            // function that parses the user inputs
             .then(function (answer) {
                 for (var i = 0; i < res.length; i++) {
                     // match the selected product to an item in the products table
-                    if (res[i].product_name == answer.product) {
+                    if (res[i].item_id == answer.product) {
                         // declare a variable for the order_item
                         var order = res[i];
-                        //console.log(order);
                     }
-                }
+                };
+                console.log("Checking stock for your order: " + answer.order_qty + " unit(s) of " + order.product_name + "...");
+                console.log("");
                 var updatedStockQty = parseInt(order.stock_quantity) - parseInt(answer.order_qty);
-
                 if (order.stock_quantity < parseInt(answer.order_qty)) {
-                    console.log("Sorry, we have insufficient stock. Please revise your ");
+                    console.log("Sorry, we have insufficient stock. Please revise your order.");
                     console.log("");
                     purchase();
-                } else {
+                } else if (order.stock_quantity >= parseInt(answer.order_qty)) {
                     connection.query('UPDATE products SET ? WHERE ?', [{
                         stock_quantity: updatedStockQty
                     }, {
@@ -102,6 +102,10 @@ function purchase() {
                         continueShopping();
 
                     })
+                } else {
+                    console.log("Woops! You have not entered a valid number of units to purchase. Please revise your order.");
+                    console.log("");
+                    purchase();
                 }
             })
     })
@@ -115,10 +119,11 @@ function continueShopping() {
         choices: ["Yes", "No"]
     }).then(function (answer) {
         if (answer.continue == "Yes") {
-            purchase();
+            start();
         } else {
             console.log("Thank you for shopping with us! Your order will arrive in 3-5 days.");
             console.log('----------------------------------------------------------------------------------------------------');
+            connection.end();
         }
     })
 }
