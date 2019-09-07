@@ -11,8 +11,8 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
 * run bamazon.sql in MySQL Workbench to create database
 
 ---
-## Outline
-1. Products available for purchase will be displayed.
+## Application outline
+1. User will be welcomed and products available for purchase will be displayed.
 2. User will be prompted to select a product to purchase and number of units to be purchased.
 3. The application will check the available inventory -
    a) if there is sufficient stock, the user will be shown the total cost and the database will be updated to reflect the reduction in stock.
