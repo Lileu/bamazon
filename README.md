@@ -6,8 +6,9 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
 
 ---
 ## Prerequisites
-* node.js
-* run 'npm install' to install required packages
+* install node.js
+* run 'npm i' to install required packages
+* run bamazon.sql in MySQL Workbench to create database
 
 ---
 ## Outline
@@ -23,9 +24,9 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
 * javascript
 * node.js
 * npm packages:
-- [mysql](https://www.npmjs.com/package/mysql)
-- [inquirer](https://www.npmjs.com/package/inquirer)
-- [cli-table](https://www.npmjs.com/package/cli-table)
+  - [mysql](https://www.npmjs.com/package/mysql)
+  - [inquirer](https://www.npmjs.com/package/inquirer)
+  - [cli-table](https://www.npmjs.com/package/cli-table)
 * MySQLWorkbench
 
 ---
