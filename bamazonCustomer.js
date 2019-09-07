@@ -10,9 +10,6 @@ var connection = mysql.createConnection({
     database: 'bamazon'
 });
 
-
-var productPurchased = [];
-
 // connect to the mysql server and sql database
 connection.connect(function (err) {
     if (err) throw err;
@@ -41,7 +38,8 @@ function start() {
                 .push([res[i].item_id, res[i].product_name, res[i].price])
         };
         console.log(table.toString());
-        console.log('----------------------------------------------------------------------------------------------------');        purchase();
+        console.log('----------------------------------------------------------------------------------------------------');
+        purchase();
     })
 };
 // function to execute the purchase transaction
@@ -53,13 +51,13 @@ function purchase() {
                     name: 'product',
                     type: 'input',
                     message: "What is the Item number for the product you would like to buy?",
-                    validate: function(value){
-                        if(isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0){
-                          return true;
-                        } else{
-                          return false;
+                    validate: function (value) {
+                        if (isNaN(value) == false && parseInt(value) <= res.length && parseInt(value) > 0) {
+                            return true;
+                        } else {
+                            return false;
                         }
-                      }
+                    }
                 },
                 {
                     name: 'order_qty',
