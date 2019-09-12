@@ -4,13 +4,11 @@ Week 12 homework assignment - Node.js &amp; MySQL
 ## Description
 Amazon-like storefront app that takes in orders from customers and depletes stock from the store's inventory. The app also tracks product sales across the store's departments and then provides a summary of the highest-grossing departments in the store.
 
----
 ## Prerequisites
 * install node.js
 * run 'npm i' to install required packages
 * run bamazon.sql in MySQL Workbench to create database
 
----
 ## Application outline
 1. User will be welcomed and products available for purchase will be displayed.
 2. User will be prompted to select a product to purchase and number of units to be purchased.
@@ -19,7 +17,6 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
    b) if there is insufficient stock, the user will be informed and asked to revise their order.
 4. The user will be given the option to continue shopping or exit.
 
----
 ## Built with
 * javascript
 * node.js
@@ -28,6 +25,3 @@ Amazon-like storefront app that takes in orders from customers and depletes stoc
   - [inquirer](https://www.npmjs.com/package/inquirer)
   - [cli-table](https://www.npmjs.com/package/cli-table)
 * MySQLWorkbench
-
----
-## Demo video
